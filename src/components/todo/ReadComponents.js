@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { getOne } from "../../api/todoApi"
+import useCustomMove from "../../hooks/useCustomMove"
 
 const initialState = {
   tno: 0,
@@ -12,6 +13,8 @@ const initialState = {
 const ReadComponent = ({ tno }) => {
   const [todo, setTodo] = useState(initialState)
 
+  const { moveToList, moveToModify } = useCustomMove()
+
   useEffect(() => {
     getOne(tno).then((data) => {
       console.log(data)
@@ -20,12 +23,31 @@ const ReadComponent = ({ tno }) => {
   }, [tno])
 
   return (
-    <div className="p-4 mt-2 mt-10 border-2 border-sky-200">
+    <div className="p-4 m-2 mt-10 border-2 border-sky-200">
       {makeDiv("Tno", todo.tno)}
       {makeDiv("Writer", todo.writer)}
       {makeDiv("Title", todo.title)}
       {makeDiv("DueDate", todo.dueDate)}
       {makeDiv("Complete", todo.complete ? "Completed" : "Not Yet")}
+
+      {/* buttons..........................start */}
+      <div className="flex justify-end p-4">
+        <button
+          type="button"
+          className="w-32 p-4 m-2 text-xl text-white bg-blue-500 rounded"
+          onClick={() => moveToList()}
+        >
+          List
+        </button>
+
+        <button
+          type="button"
+          className="w-32 p-4 m-2 text-xl text-white bg-red-500 rounded"
+          onClick={() => moveToModify(tno)}
+        >
+          Modify
+        </button>
+      </div>
     </div>
   )
 }
