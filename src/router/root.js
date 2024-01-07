@@ -5,6 +5,7 @@ import productsRouter from "./productsRouter"
 const { createBrowserRouter } = require("react-router-dom")
 
 const Loading = () => <div>Loading...</div>
+
 const Main = lazy(() => import("../pages/MainPage"))
 
 const About = lazy(() => import("../pages/AboutPage"))
