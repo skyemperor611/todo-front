@@ -57,7 +57,7 @@ const ListComponent = () => {
                 <div className="w-full overflow-hidden">
                   <img
                     alt="product"
-                    className="rounded-md m-aulto w-60"
+                    className="m-auto rounded-md w-60"
                     src={`${host}/api/products/view/s_${product.uploadFileNames[0]}`}
                   />
                 </div>

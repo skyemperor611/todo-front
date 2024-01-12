@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react"
+import { getOne, putOne, deleteOne } from "../../api/productsApi"
 import FetchingModal from "../common/FetchingModal"
 import { API_SERVER_HOST } from "../../api/todoApi"
-import { getOne, putOne } from "../../api/productsApi"
+import useCustomMove from "../../hooks/useCustomMove"
+import ResultModal from "../common/ResultModal"
 
 const initState = {
   pno: 0,
   pname: "",
   pdesc: "",
   price: 0,
-  deFlag: false,
+  delFlag: false,
   uploadFileNames: [],
 }
 
@@ -16,6 +18,10 @@ const host = API_SERVER_HOST
 
 const ModifyComponent = ({ pno }) => {
   const [product, setProduct] = useState(initState)
+
+  const [result, setResult] = useState(null)
+
+  const { moveToRead, moveToList } = useCustomMove()
 
   const [fetching, setFetching] = useState(false)
 
@@ -57,18 +63,50 @@ const ModifyComponent = ({ pno }) => {
     formData.append("pname", product.pname)
     formData.append("pdesc", product.pdesc)
     formData.append("price", product.price)
-    formData.append("deFlag", product.deFlag)
+    formData.append("delFlag", product.delFlag)
 
     for (let i = 0; i < product.uploadFileNames.length; i++) {
       formData.append("uploadFileNames", product.uploadFileNames[i])
     }
-    putOne(pno, formData)
+
+    setFetching(true)
+
+    putOne(pno, formData).then((data) => {
+      setResult("Modified")
+      setFetching(false)
+    })
+  }
+
+  const handleClickDelete = () => {
+    setFetching(true)
+    deleteOne(pno).then((data) => {
+      setResult("Deleted")
+      setFetching(false)
+    })
+  }
+
+  const closeModal = () => {
+    if (result === "Modified") {
+      moveToRead(pno)
+    } else if (result === "Deleted") {
+      moveToList({ page: 1 })
+    }
+
+    setResult(null)
   }
 
   return (
     <div className="p-4 m-2 mt-10 border-2 border-sky-200">
-      Product Modify Component
       {fetching ? <FetchingModal /> : <></>}
+      {result ? (
+        <ResultModal
+          title={`${result}`}
+          content={"정상적으로 처리 되었습니다."}
+          callbackFn={closeModal}
+        />
+      ) : (
+        <></>
+      )}
       <div className="flex justify-center">
         <div className="relative flex flex-wrap items-stretch w-full mb-4">
           <div className="w-1/5 p-6 font-bold text-right">Product Name</div>
@@ -111,8 +149,8 @@ const ModifyComponent = ({ pno }) => {
         <div className="relative flex flex-wrap items-stretch w-full mb-4">
           <div className="w-1/5 p-6 font-bold text-right">Delete</div>
           <select
-            name="deFlag"
-            value={product.deFlag}
+            name="delFlag"
+            value={product.delFlag}
             onChange={handleChangeProduct}
             className="w-4/6 p-6 border border-solid rounded-r shadow-md border-neutral-300"
           >
@@ -135,12 +173,9 @@ const ModifyComponent = ({ pno }) => {
       <div className="flex justify-center">
         <div className="relative flex flex-wrap items-stretch w-full mb-4">
           <div className="w-1/5 p-6 font-bold text-right">Images</div>
-          <div className="flex flex-wrap items-start justify-center w-4/6">
+          <div className="flex flex-wrap items-start justify-center w-4/5">
             {product.uploadFileNames.map((imgFile, i) => (
-              <div
-                className="flex flex-col justify-center w-1/3 m-1 align-baseline"
-                key={i}
-              >
+              <div className="flex flex-col justify-center w-1/3" key={i}>
                 <button
                   className="text-3xl text-white bg-blue-500"
                   onClick={() => deleteOldImages(imgFile)}
@@ -157,6 +192,7 @@ const ModifyComponent = ({ pno }) => {
         <button
           type="button"
           className="w-32 p-4 m-2 text-xl text-white bg-red-500 rounded"
+          onClick={handleClickDelete}
         >
           Delete
         </button>
@@ -172,6 +208,7 @@ const ModifyComponent = ({ pno }) => {
         <button
           type="button"
           className="w-32 p-4 m-2 text-xl text-white bg-blue-500 rounded"
+          onClick={moveToList}
         >
           List
         </button>

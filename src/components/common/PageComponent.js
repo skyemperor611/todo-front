@@ -1,9 +1,4 @@
 const PageComponent = ({ serverData, movePage }) => {
-  console.log(
-    "===========================serverData==========================="
-  )
-  console.log(serverData)
-
   return (
     <div className="flex justify-center m-6">
       {serverData.prev ? (
