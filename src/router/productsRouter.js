@@ -4,18 +4,20 @@ import { Navigate } from "react-router-dom"
 const productsRouter = () => {
   const Loading = () => <div>Loading...</div>
 
-  const ProductsList = lazy(() => import("../pages/products/ListPage"))
+  const ProductList = lazy(() => import("../pages/products/ListPage"))
 
-  const ProductsAdd = lazy(() => import("../pages/products/AddPage"))
+  const ProductAdd = lazy(() => import("../pages/products/AddPage"))
 
   const ProductRead = lazy(() => import("../pages/products/ReadPage"))
+
+  const ProductModify = lazy(() => import("../pages/products/ModifyPage"))
 
   return [
     {
       path: "list",
       element: (
         <Suspense fallback={Loading}>
-          <ProductsList />
+          <ProductList />
         </Suspense>
       ),
     },
@@ -27,7 +29,7 @@ const productsRouter = () => {
       path: "add",
       element: (
         <Suspense fallback={Loading}>
-          <ProductsAdd />
+          <ProductAdd />
         </Suspense>
       ),
     },
@@ -36,6 +38,14 @@ const productsRouter = () => {
       element: (
         <Suspense fallback={Loading}>
           <ProductRead />
+        </Suspense>
+      ),
+    },
+    {
+      path: "modify/:pno",
+      element: (
+        <Suspense fallback={Loading}>
+          <ProductModify />
         </Suspense>
       ),
     },
